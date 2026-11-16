@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#f6f5fb">
+    <meta name="description" content="Dein bunter, persönlicher Aufgabenplaner.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="manifest" href="{{ url_for('aufgabenplaner_manifest') }}">
+    <link rel="icon" href="{{ url_for('static', filename='aufgabenplaner-icon.svg') }}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='aufgabenplaner-icon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='aufgabenplaner.css') }}">
+    <title>Mein Aufgabenplaner</title>
+    <script defer src="{{ url_for('static', filename='aufgabenplaner.js') }}"></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="{{ url_for('aufgabenplaner') }}" aria-label="Aufgabenplaner Startseite">
+          <span class="brand-mark" aria-hidden="true">✦</span>
+          <span>Mein Aufgabenplaner</span>
+        </a>
+        <span class="local-badge"><span aria-hidden="true">●</span> Nur auf diesem Gerät</span>
+      </header>
+
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">DEIN TAG, DEIN RHYTHMUS</p>
+          <h1>Was möchtest du <span>schaffen?</span></h1>
+          <p class="hero-subtitle">Kleine Schritte. Gute Gedanken. Ein klarer Plan.</p>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <span class="art-sparkle sparkle-one">✦</span>
+          <span class="art-orb orb-one"></span>
+          <span class="art-orb orb-two"></span>
+          <span class="art-orb orb-three"></span>
+          <span class="art-sparkle sparkle-two">✧</span>
+        </div>
+      </section>
+
+      <section class="composer card" aria-labelledby="composer-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">NEUER EINTRAG</p>
+            <h2 id="composer-title">Eine Sache nach der anderen</h2>
+          </div>
+          <span class="heading-emoji" aria-hidden="true">🌈</span>
+        </div>
+        <form id="task-form">
+          <label class="field-label" for="task-title">Was steht an?</label>
+          <input id="task-title" name="title" type="text" maxlength="180" placeholder="Zum Beispiel: Blumen gießen" required>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label class="field-label" for="task-year">Datum</label>
+              <div class="date-selects">
+                <select id="task-year" aria-label="Jahr"></select>
+                <select id="task-month" aria-label="Monat"></select>
+                <select id="task-day" aria-label="Tag"></select>
+              </div>
+            </div>
+            <div class="form-field time-field">
+              <label class="field-label" for="task-hour">Uhrzeit</label>
+              <div class="time-selects">
+                <select id="task-hour" aria-label="Stunde"></select>
+                <span aria-hidden="true">:</span>
+                <select id="task-minute" aria-label="Minute"></select>
+              </div>
+            </div>
+          </div>
+
+          <label class="field-label" for="task-details">Details <span>(optional)</span></label>
+          <textarea id="task-details" name="details" rows="2" maxlength="1200" placeholder="Alles, was du dir dazu merken möchtest …"></textarea>
+          <button class="primary-button" type="submit"><span aria-hidden="true">＋</span> Aufgabe hinzufügen</button>
+        </form>
+      </section>
+
+      <nav class="view-tabs" aria-label="Ansichten">
+        <button class="view-tab is-active" type="button" data-view="today"><span aria-hidden="true">☀</span> Meine Aufgaben</button>
+        <button class="view-tab" type="button" data-view="calendar"><span aria-hidden="true">▦</span> Kalender</button>
+        <button class="view-tab" type="button" data-view="forgotten"><span aria-hidden="true">♡</span> Vergessene Aufgaben <span id="forgotten-count" class="tab-count">0</span></button>
+      </nav>
+
+      <section id="view-today" class="view-panel card">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">EIN GUTER ANFANG</p>
+            <h2>Deine Aufgaben für heute</h2>
+            <p id="today-date" class="muted"></p>
+          </div>
+          <span class="heading-emoji" aria-hidden="true">🌻</span>
+        </div>
+        <div id="today-list" class="task-list"></div>
+        <p id="today-empty" class="empty-state" hidden>Hier ist noch Platz für etwas Schönes. ✨</p>
+      </section>
+
+      <section id="view-calendar" class="view-panel card" hidden>
+        <div class="calendar-header">
+          <div>
+            <p class="eyebrow">DEIN BLICK NACH VORN</p>
+            <h2 id="calendar-month"></h2>
+          </div>
+          <div class="month-controls">
+            <button id="previous-month" class="round-button" type="button" aria-label="Vorheriger Monat">‹</button>
+            <button id="next-month" class="round-button" type="button" aria-label="Nächster Monat">›</button>
+          </div>
+        </div>
+        <div class="calendar-grid" id="calendar-grid" aria-label="Monatskalender"></div>
+        <div class="selected-day-heading">
+          <div>
+            <p class="eyebrow">AUSGEWÄHLTER TAG</p>
+            <h3 id="selected-date"></h3>
+          </div>
+          <span class="day-count" id="selected-count">0 Aufgaben</span>
+        </div>
+        <div id="calendar-list" class="task-list"></div>
+        <p id="calendar-empty" class="empty-state" hidden>Für diesen Tag ist noch nichts geplant. 🌱</p>
+      </section>
+
+      <section id="view-forgotten" class="view-panel card" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">OHNE DRUCK</p>
+            <h2>Vergessene Aufgaben</h2>
+            <p class="muted">Sie bleiben hier, bis du sie löschst.</p>
+          </div>
+          <span class="heading-emoji" aria-hidden="true">🧡</span>
+        </div>
+        <div id="forgotten-list" class="task-list"></div>
+        <p id="forgotten-empty" class="empty-state" hidden>Noch nichts vergessen. Weiter so! 🌟</p>
+      </section>
+
+      <footer class="footer-note">Deine Aufgaben bleiben privat auf diesem Gerät.</footer>
+    </main>
+
+    <div id="task-menu" class="context-menu" hidden role="menu">
+      <button type="button" data-action="details" role="menuitem">✧ Details ansehen</button>
+      <button type="button" data-action="edit" role="menuitem">✎ Bearbeiten</button>
+      <button type="button" data-action="delete" role="menuitem" class="danger-action">⌫ Löschen</button>
+    </div>
+
+    <dialog id="details-dialog" class="modal">
+      <form method="dialog">
+        <button class="modal-close" aria-label="Schließen">×</button>
+        <p class="eyebrow">AUFGABEN-DETAILS</p>
+        <h2 id="details-title"></h2>
+        <p id="details-when" class="muted"></p>
+        <p id="details-text" class="details-copy"></p>
+      </form>
+    </dialog>
+
+    <dialog id="edit-dialog" class="modal edit-modal">
+      <form id="edit-form">
+        <button class="modal-close" type="button" data-close-edit aria-label="Schließen">×</button>
+        <p class="eyebrow">KLEINE ÄNDERUNG</p>
+        <h2>Aufgabe bearbeiten</h2>
+        <label class="field-label" for="edit-title">Aufgabe</label>
+        <input id="edit-title" maxlength="180" required>
+        <div class="form-row">
+          <div class="form-field">
+            <label class="field-label" for="edit-date">Datum</label>
+            <input id="edit-date" type="date" required>
+          </div>
+          <div class="form-field">
+            <label class="field-label" for="edit-time">Uhrzeit</label>
+            <select id="edit-time" required></select>
+          </div>
+        </div>
+        <label class="field-label" for="edit-details">Details <span>(optional)</span></label>
+        <textarea id="edit-details" rows="4" maxlength="1200"></textarea>
+        <button class="primary-button" type="submit">Änderungen speichern</button>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "id": "/planer/",
+  "name": "Mein Aufgabenplaner",
+  "short_name": "Aufgaben",
+  "description": "Ein bunter, persönlicher Aufgabenplaner für jeden Tag.",
+  "lang": "de",
+  "start_url": "/planer/",
+  "scope": "/planer/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f7f6fb",
+  "theme_color": "#f6f5fb",
+  "icons": [
+    {
+      "src": "/static/aufgabenplaner-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/aufgabenplaner-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="QR-Codes erstellen und in einer privaten Galerie speichern.">
+    <title>QR-Code-Werkzeug</title>
+  </head>
+  <body>
+    <main>
+      <header>
+        <p>QR-Code-Werkzeug</p>
+        <h1>QR-Code erstellen</h1>
+        <p>Erstelle QR-Codes mit bis zu {{ max_qr_length }} Zeichen. Die Galerie ist nur deinem Browser zugeordnet.</p>
+      </header>
+
+      <section aria-labelledby="create-heading">
+        <h2 id="create-heading">Neuen QR-Code erstellen</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul aria-live="polite">
+          {% for category, message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        <form action="{{ url_for('qr_erstellen') }}" method="post">
+          <label for="qr-data">Text oder Link</label>
+          <textarea
+            id="qr-data"
+            name="data"
+            rows="4"
+            required
+            maxlength="{{ max_qr_length }}"
+            placeholder="Gib hier deinen Text oder Link ein"
+          >{{ form_data }}</textarea>
+          <p>Maximal {{ max_qr_length }} Zeichen.</p>
+
+          <label for="qr-background">Hintergrundfarbe</label>
+          <select id="qr-background" name="background">
+            {% for name, color in qr_backgrounds.items() %}
+            <option value="{{ color }}"{% if color == form_background %} selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+          </select>
+
+          <label for="qr-name">Name für die Galerie</label>
+          <input id="qr-name" name="name" type="text" maxlength="80" value="{{ form_name }}" placeholder="Mein QR-Code">
+          <button type="submit">QR-Code erstellen</button>
+        </form>
+      </section>
+
+      <section aria-labelledby="gallery-heading">
+        <h2 id="gallery-heading">Deine QR-Codes</h2>
+        {% if gallery %}
+        <form action="{{ url_for('galerie_leeren') }}" method="post">
+          <button type="submit">Galerie leeren</button>
+        </form>
+        <ul>
+          {% for entry in gallery %}
+          <li>
+            <h3>{{ entry.name }}</h3>
+            <img
+              src="{{ url_for('qr_bild', eintrag_id=entry.id) }}"
+              alt="QR-Code: {{ entry.name }}"
+              width="240"
+              height="240"
+            >
+            <p>{{ entry.daten }}</p>
+            <p><a href="{{ url_for('qr_bild', eintrag_id=entry.id, download=1) }}">PNG herunterladen</a></p>
+            <form action="{{ url_for('qr_loeschen', eintrag_id=entry.id) }}" method="post">
+              <button type="submit">Entfernen</button>
+            </form>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p>Noch keine QR-Codes gespeichert.</p>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>
